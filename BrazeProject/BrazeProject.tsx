@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import RadioGroup from 'react-native-radio-buttons-group';
 import Braze from '@braze/react-native-sdk';
+import { CustomIAM } from './CustomIAM';
 
 // Change to `true` to automatically log clicks, button clicks,
 // and impressions for in-app messages and content cards.
@@ -174,18 +175,18 @@ export const BrazeProject = (): ReactElement => {
       }
     });
 
-    Braze.subscribeToInAppMessage(true, event => {
-      if (automaticallyInteract) {
-        console.log(
-          'Automatically logging IAM click, button click `0`, and impression.',
-        );
-        Braze.logInAppMessageClicked(event.inAppMessage);
-        Braze.logInAppMessageImpression(event.inAppMessage);
-        Braze.logInAppMessageButtonClicked(event.inAppMessage, 0);
-      }
-      showToast('inAppMessage received in the React layer');
-      console.log(event.inAppMessage);
-    });
+    // Braze.subscribeToInAppMessage(true, event => {
+    //   if (automaticallyInteract) {
+    //     console.log(
+    //       'Automatically logging IAM click, button click `0`, and impression.',
+    //     );
+    //     Braze.logInAppMessageClicked(event.inAppMessage);
+    //     Braze.logInAppMessageImpression(event.inAppMessage);
+    //     Braze.logInAppMessageButtonClicked(event.inAppMessage, 0);
+    //   }
+    //   showToast('inAppMessage received in the React layer');
+    //   console.log(event.inAppMessage);
+    // });
 
     const inAppMessageSubscription = Braze.addListener(
       Braze.Events.IN_APP_MESSAGE_RECEIVED,
@@ -759,256 +760,259 @@ export const BrazeProject = (): ReactElement => {
 
   const setPushTokenPress = async () => {
     Braze.registerPushToken(pushToken);
-  }
+  };
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={styles.container}
-      stickyHeaderIndices={[0]}>
-      {/* eslint-disable-next-line react-native/no-inline-styles */}
-      <View style={[styles.toastView, { opacity: toastVisible ? 1 : 0 }]}>
-        <Text style={styles.toastText}>{message}</Text>
-      </View>
+    <View>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={styles.container}
+        stickyHeaderIndices={[0]}>
+        {/* eslint-disable-next-line react-native/no-inline-styles */}
+        <View style={[styles.toastView, { opacity: toastVisible ? 1 : 0 }]}>
+          <Text style={styles.toastText}>{message}</Text>
+        </View>
 
-      {/* Events */}
+        {/* Events */}
 
-      <View style={styles.row}>
+        <View style={styles.row}>
+          <TextInput
+            style={styles.textInput}
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={setUserIdText}
+            value={userIdText}
+          />
+          <TouchableHighlight onPress={changeUserPress}>
+            <Text>Set User ID</Text>
+          </TouchableHighlight>
+        </View>
+        <TouchableHighlight onPress={getUserIdPress}>
+          <Text>Get User ID</Text>
+        </TouchableHighlight>
+        <View style={styles.row}>
+          <TextInput
+            style={styles.textInput}
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={setSignatureText}
+            value={signatureText}
+          />
+          <TouchableHighlight onPress={setSignaturePress}>
+            <Text>Set Signature</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={styles.row}>
+          <TextInput
+            style={styles.textInput}
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={setCustomEventText}
+          />
+          <TouchableHighlight onPress={logCustomEventPress}>
+            <Text>Log Custom Event</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={styles.row}>
+          <TextInput
+            style={styles.textInput}
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={setLanguageText}
+          />
+          <TouchableHighlight onPress={setLanguagePress}>
+            <Text>Set Language</Text>
+          </TouchableHighlight>
+        </View>
+        <TouchableHighlight onPress={logPurchasePress}>
+          <Text>Log Purchase</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={hideCurrentInAppMessage}>
+          <Text>Dismiss In App Message</Text>
+        </TouchableHighlight>
+
+        {/* User Attributes */}
+
+        <View style={styles.row}>
+          <RadioGroup
+            containerStyle={styles.radioGroup}
+            radioButtons={subscriptionStateButtons}
+            selectedId={subscriptionState}
+            onPress={setSubscriptionState}
+          />
+          <TouchableHighlight onPress={setSubscriptionStatePress}>
+            <Text>Set Subscription State</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={styles.row}>
+          <RadioGroup
+            containerStyle={styles.radioGroup}
+            radioButtons={genderButtons}
+            selectedId={gender}
+            onPress={setGender}
+          />
+          <TouchableHighlight onPress={setGenderPress}>
+            <Text>Set Gender</Text>
+          </TouchableHighlight>
+        </View>
+        <TouchableHighlight onPress={logUserPropertiesPress}>
+          <Text>Set User Properties</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={logCustomAttributePress}>
+          <Text>Set Custom User Attributes</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={logCustomAttributeWithMergePress}>
+          <Text>Set Custom User Attributes with NCA Merge</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={unsetCustomUserAttributePress}>
+          <Text>Unset Custom User Attributes</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={addToCustomAttributeArrayPress}>
+          <Text>Add to Custom Attribute Array</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={removeFromCustomAttributeArrayPress}>
+          <Text>Remove From Custom Attribute Array</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={incrementCustomAttributePress}>
+          <Text>Increment Custom Attribute Array</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={updateTrackingListPress}>
+          <Text>Update Tracking Properties (iOS)</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={enableAdTracking}>
+          <Text>Enable Ad Tracking</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={requestImmediateDataFlush}>
+          <Text style={styles.warningText}>Flush Data ⚡️</Text>
+        </TouchableHighlight>
+
+        {/* Content Cards */}
+
+        <Space />
+        <TouchableHighlight onPress={launchContentCardsPress}>
+          <Text>Launch Content Cards</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={requestContentCardsRefresh}>
+          <Text>Request Content Cards Refresh</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={getContentCards}>
+          <Text>Get Content Cards {'&'} Log interactions</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={getCachedContentCards}>
+          <Text>Get Cached Content Cards {'&'} Log interactions</Text>
+        </TouchableHighlight>
+
+        {/* News Feed */}
+
+        <Space />
+        <TouchableHighlight onPress={requestNewsFeedRefresh}>
+          <Text>Request News Feed Refresh</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={logNewsFeedInteractions}>
+          <Text>Log interactions on News Feed cards</Text>
+        </TouchableHighlight>
+
+        {/* Feature Flags */}
+
+        <Space />
+        <TouchableHighlight onPress={refreshFeatureFlagsPress}>
+          <Text>Refresh Feature Flags</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={logFeatureFlagImpressionPress}>
+          <Text>Log Feature Flag Impression</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={getFeatureFlagsPress}>
+          <Text>Get All Feature Flags</Text>
+        </TouchableHighlight>
+        <View style={styles.row}>
+          <TextInput
+            style={styles.textInput}
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={setFeatureFlagId}
+            value={featureFlagId}
+          />
+          <TouchableHighlight onPress={getFeatureFlagByIdPress}>
+            <Text>Get Feature Flag by ID</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={styles.container}>
+          <RadioGroup
+            containerStyle={styles.radioGroup}
+            radioButtons={featureFlagPropertyButtons}
+            selectedId={featureFlagPropertyType}
+            onPress={setFeatureFlagPropertyType}
+          />
+          <TextInput
+            style={styles.textInput}
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={setFeatureFlagPropertyKey}
+            value={featureFlagPropertyKey}
+          />
+          <TouchableHighlight onPress={getFeatureFlagPropertyPress}>
+            <Text>Get Feature Flag Property</Text>
+          </TouchableHighlight>
+        </View>
+
+        {/* Location */}
+
+        <Space />
+        {Platform.OS === 'android' ? (
+          <TouchableHighlight onPress={requestLocationInitialization}>
+            <Text>Request Location Initialization</Text>
+          </TouchableHighlight>
+        ) : (
+          false
+        )}
+        <TouchableHighlight onPress={requestGeofences}>
+          <Text>Request Geofences</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={setLastKnownLocation}>
+          <Text>Set Last Known Location</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={setLocationCustomAttribute}>
+          <Text>Set Custom Location Attribute</Text>
+        </TouchableHighlight>
+
+        {/* Other */}
+
+        <Space />
+        <TouchableHighlight onPress={toggleiOSPushAutoEnabled}>
+          <Text>Toggle iOS Push Automation enabled</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={requestPushPermission}>
+          <Text>Request Push Permission</Text>
+        </TouchableHighlight>
         <TextInput
           style={styles.textInput}
+          placeholder="push token"
           autoCorrect={false}
           autoCapitalize="none"
-          onChangeText={setUserIdText}
-          value={userIdText}
+          onChangeText={setPushToken}
+          value={pushToken}
         />
-        <TouchableHighlight onPress={changeUserPress}>
-          <Text>Set User ID</Text>
+        <TouchableHighlight onPress={setPushTokenPress}>
+          <Text>Set Push Token</Text>
         </TouchableHighlight>
-      </View>
-      <TouchableHighlight onPress={getUserIdPress}>
-        <Text>Get User ID</Text>
-      </TouchableHighlight>
-      <View style={styles.row}>
-        <TextInput
-          style={styles.textInput}
-          autoCorrect={false}
-          autoCapitalize="none"
-          onChangeText={setSignatureText}
-          value={signatureText}
-        />
-        <TouchableHighlight onPress={setSignaturePress}>
-          <Text>Set Signature</Text>
+        <TouchableHighlight onPress={setAttributionData}>
+          <Text>Set Attribution Data</Text>
         </TouchableHighlight>
-      </View>
-      <View style={styles.row}>
-        <TextInput
-          style={styles.textInput}
-          autoCorrect={false}
-          autoCapitalize="none"
-          onChangeText={setCustomEventText}
-        />
-        <TouchableHighlight onPress={logCustomEventPress}>
-          <Text>Log Custom Event</Text>
+        <TouchableHighlight onPress={getDeviceId}>
+          <Text>Get Device ID</Text>
         </TouchableHighlight>
-      </View>
-      <View style={styles.row}>
-        <TextInput
-          style={styles.textInput}
-          autoCorrect={false}
-          autoCapitalize="none"
-          onChangeText={setLanguageText}
-        />
-        <TouchableHighlight onPress={setLanguagePress}>
-          <Text>Set Language</Text>
+        <TouchableHighlight onPress={wipeData}>
+          <Text>Wipe Data</Text>
         </TouchableHighlight>
-      </View>
-      <TouchableHighlight onPress={logPurchasePress}>
-        <Text>Log Purchase</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={hideCurrentInAppMessage}>
-        <Text>Dismiss In App Message</Text>
-      </TouchableHighlight>
-
-      {/* User Attributes */}
-
-      <View style={styles.row}>
-        <RadioGroup
-          containerStyle={styles.radioGroup}
-          radioButtons={subscriptionStateButtons}
-          selectedId={subscriptionState}
-          onPress={setSubscriptionState}
-        />
-        <TouchableHighlight onPress={setSubscriptionStatePress}>
-          <Text>Set Subscription State</Text>
+        <TouchableHighlight onPress={disableSDK}>
+          <Text>Disable SDK</Text>
         </TouchableHighlight>
-      </View>
-      <View style={styles.row}>
-        <RadioGroup
-          containerStyle={styles.radioGroup}
-          radioButtons={genderButtons}
-          selectedId={gender}
-          onPress={setGender}
-        />
-        <TouchableHighlight onPress={setGenderPress}>
-          <Text>Set Gender</Text>
+        <TouchableHighlight onPress={enableSDK}>
+          <Text>Enable SDK</Text>
         </TouchableHighlight>
-      </View>
-      <TouchableHighlight onPress={logUserPropertiesPress}>
-        <Text>Set User Properties</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={logCustomAttributePress}>
-        <Text>Set Custom User Attributes</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={logCustomAttributeWithMergePress}>
-        <Text>Set Custom User Attributes with NCA Merge</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={unsetCustomUserAttributePress}>
-        <Text>Unset Custom User Attributes</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={addToCustomAttributeArrayPress}>
-        <Text>Add to Custom Attribute Array</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={removeFromCustomAttributeArrayPress}>
-        <Text>Remove From Custom Attribute Array</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={incrementCustomAttributePress}>
-        <Text>Increment Custom Attribute Array</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={updateTrackingListPress}>
-        <Text>Update Tracking Properties (iOS)</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={enableAdTracking}>
-        <Text>Enable Ad Tracking</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={requestImmediateDataFlush}>
-        <Text style={styles.warningText}>Flush Data ⚡️</Text>
-      </TouchableHighlight>
-
-      {/* Content Cards */}
-
-      <Space />
-      <TouchableHighlight onPress={launchContentCardsPress}>
-        <Text>Launch Content Cards</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={requestContentCardsRefresh}>
-        <Text>Request Content Cards Refresh</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={getContentCards}>
-        <Text>Get Content Cards {'&'} Log interactions</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={getCachedContentCards}>
-        <Text>Get Cached Content Cards {'&'} Log interactions</Text>
-      </TouchableHighlight>
-
-      {/* News Feed */}
-
-      <Space />
-      <TouchableHighlight onPress={requestNewsFeedRefresh}>
-        <Text>Request News Feed Refresh</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={logNewsFeedInteractions}>
-        <Text>Log interactions on News Feed cards</Text>
-      </TouchableHighlight>
-
-      {/* Feature Flags */}
-
-      <Space />
-      <TouchableHighlight onPress={refreshFeatureFlagsPress}>
-        <Text>Refresh Feature Flags</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={logFeatureFlagImpressionPress}>
-        <Text>Log Feature Flag Impression</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={getFeatureFlagsPress}>
-        <Text>Get All Feature Flags</Text>
-      </TouchableHighlight>
-      <View style={styles.row}>
-        <TextInput
-          style={styles.textInput}
-          autoCorrect={false}
-          autoCapitalize="none"
-          onChangeText={setFeatureFlagId}
-          value={featureFlagId}
-        />
-        <TouchableHighlight onPress={getFeatureFlagByIdPress}>
-          <Text>Get Feature Flag by ID</Text>
-        </TouchableHighlight>
-      </View>
-      <View style={styles.container}>
-        <RadioGroup
-          containerStyle={styles.radioGroup}
-          radioButtons={featureFlagPropertyButtons}
-          selectedId={featureFlagPropertyType}
-          onPress={setFeatureFlagPropertyType}
-        />
-        <TextInput
-          style={styles.textInput}
-          autoCorrect={false}
-          autoCapitalize="none"
-          onChangeText={setFeatureFlagPropertyKey}
-          value={featureFlagPropertyKey}
-        />
-        <TouchableHighlight onPress={getFeatureFlagPropertyPress}>
-          <Text>Get Feature Flag Property</Text>
-        </TouchableHighlight>
-      </View>
-
-      {/* Location */}
-
-      <Space />
-      {Platform.OS === 'android' ? (
-        <TouchableHighlight onPress={requestLocationInitialization}>
-          <Text>Request Location Initialization</Text>
-        </TouchableHighlight>
-      ) : (
-        false
-      )}
-      <TouchableHighlight onPress={requestGeofences}>
-        <Text>Request Geofences</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={setLastKnownLocation}>
-        <Text>Set Last Known Location</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={setLocationCustomAttribute}>
-        <Text>Set Custom Location Attribute</Text>
-      </TouchableHighlight>
-
-      {/* Other */}
-
-      <Space />
-      <TouchableHighlight onPress={toggleiOSPushAutoEnabled}>
-        <Text>Toggle iOS Push Automation enabled</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={requestPushPermission}>
-        <Text>Request Push Permission</Text>
-      </TouchableHighlight>
-      <TextInput
-        style={styles.textInput}
-        placeholder='push token'
-        autoCorrect={false}
-        autoCapitalize="none"
-        onChangeText={setPushToken}
-        value={pushToken}
-      />
-      <TouchableHighlight onPress={setPushTokenPress}>
-        <Text>Set Push Token</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={setAttributionData}>
-        <Text>Set Attribution Data</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={getDeviceId}>
-        <Text>Get Device ID</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={wipeData}>
-        <Text>Wipe Data</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={disableSDK}>
-        <Text>Disable SDK</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={enableSDK}>
-        <Text>Enable SDK</Text>
-      </TouchableHighlight>
-    </ScrollView>
+      </ScrollView>
+      <CustomIAM />
+    </View>
   );
 };
 
